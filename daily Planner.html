@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eaf6fd;--card:#f7fbff;--line:#a9d9f2;--ink:#2c6c93;--soft:#5aa9d6;--acc:#7cc6ee;--hd:#d6edfa;--win:#fff6d6;--shadow:#bfe3f6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1c2a;--card:#102a3d;--line:#2a6288;--ink:#d6f0ff;--soft:#7fc4ee;--acc:#38b6f0;--hd:#17445f;--win:#3a3320;--shadow:#0b1320}}
+:root[data-theme="dark"]{--bg:#0a1c2a;--card:#102a3d;--line:#2a6288;--ink:#d6f0ff;--soft:#7fc4ee;--acc:#38b6f0;--hd:#17445f;--win:#3a3320;--shadow:#0b1320}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg) linear-gradient(180deg,color-mix(in srgb,var(--acc) 22%,var(--bg)) 0,var(--bg) 320px) no-repeat;color:var(--ink);font-family:'Nunito',system-ui,sans-serif;font-size:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-family:'Dancing Script','Brush Script MT',cursive;font-size:clamp(40px,8vw,68px);margin:4px 0;text-align:center;color:var(--acc);text-shadow:2px 2px 0 var(--shadow)}
+.quote{text-align:center;background:var(--hd);border-radius:12px;padding:8px 14px;max-width:460px;margin:0 auto 16px;font-weight:600}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;box-shadow:0 3px 0 var(--shadow);overflow:hidden;position:relative}
+.h{background:var(--hd);padding:8px 12px;font-weight:800;text-align:center;letter-spacing:.5px;text-transform:uppercase;font-size:12px}
+.b{padding:10px 12px}
+.c4{grid-column:span 4}.c6{grid-column:span 6}.c5{grid-column:span 5}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media(max-width:820px){.c4,.c5,.c6,.c7,.c8{grid-column:span 12}}
+input[type=text],textarea,input[type=date]{width:100%;border:0;border-bottom:1.5px dashed var(--line);background:transparent;color:var(--ink);font:inherit;padding:6px 2px;outline:none}
+input:focus,textarea:focus{border-bottom-color:var(--acc);background:color-mix(in srgb,var(--hd) 40%,transparent)}
+textarea{resize:vertical;min-height:70px;border:1.5px dashed var(--line);border-radius:10px;padding:8px}
+.row{display:flex;align-items:center;gap:8px}
+.num{width:26px;height:26px;border-radius:50%;background:var(--hd);display:grid;place-items:center;font-weight:800;flex:none}
+.wins{background:var(--win);border-color:#f0cf6a}.wins .h{background:color-mix(in srgb,var(--win) 70%,#f0cf6a)}
+.sched{display:grid;grid-template-columns:118px 1fr}
+.sched div{border-bottom:1px solid var(--line);padding:3px 8px;display:flex;align-items:center}
+.sched .t{background:var(--hd);font-weight:600;font-size:12px;border-right:1px solid var(--line)}
+.sched input{border:0}
+input[type=checkbox]{accent-color:var(--acc);width:18px;height:18px;flex:none}
+.tg{border:0;background:none;cursor:pointer;font-size:22px;line-height:1;padding:2px;color:var(--line);transition:transform .15s}
+.tg:hover{transform:scale(1.2)}.tg.on{color:#ef7aa1}
+.tg.bow.on{color:var(--acc)}.tg.star.on{color:#f4b400}.tg.cup.on{color:var(--acc)}
+.trk{display:grid;grid-template-columns:70px repeat(7,1fr);align-items:center;text-align:center;font-weight:700;font-size:12px}
+.btn{border:2px solid var(--line);background:var(--hd);color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;font-weight:800;cursor:pointer}
+.btn:hover{background:var(--acc);color:var(--ink)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:14px}
+.bar input[type=date]{width:auto;border:2px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--card)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(80px);background:var(--acc);color:var(--ink);padding:8px 18px;border-radius:999px;font-weight:800;transition:.3s;z-index:9}
+#toast.s{transform:translateX(-50%) translateY(0)}
+.timer{font-size:34px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.rem{border:2px dashed var(--line);border-radius:16px;padding:14px;text-align:center;font-weight:700}
+.foot{text-align:center;background:var(--hd);border-radius:12px;padding:10px;font-weight:700;margin-top:14px}
+.cen{text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>✨ Study Planner ✨</h1>
+<div class="quote">“Discipline today, success tomorrow.” 💙</div>
+
+<div class="bar">
+ <button class="btn" id="prev">◀</button>
+ <input type="date" id="date">
+ <button class="btn" id="next">▶</button>
+ <button class="btn" id="today">Today</button>
+ <button class="btn" id="save">💾 Save</button>
+ <button class="btn" id="clear">🧹 Clear day</button>
+</div>
+<div class="cen" id="dlabel" style="font-weight:800;margin:-4px 0 12px"></div>
+
+<div class="grid">
+ <div class="card c4"><div class="h">Today’s Goal 🎯</div><div class="b"><textarea data-k="goal" placeholder="What do you want to achieve today?"></textarea></div></div>
+ <div class="card c4 wins" style="grid-column:span 8"><div class="h">Today’s Wins 🏆</div><div class="b"><textarea data-k="wins" placeholder="Write every win, big or small…"></textarea></div></div>
+
+ <div class="card c5"><div class="h">⏰ Study Schedule</div><div class="sched" id="sched"></div></div>
+ <div class="c7" style="display:grid;gap:14px;align-content:start;grid-column:span 7">
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+   <div class="card"><div class="h">Top Priorities</div><div class="b" id="prio"></div></div>
+   <div class="card"><div class="h">To-Do List</div><div class="b" id="todo"></div></div>
+   <div class="card"><div class="h">Subjects to Study 📚</div><div class="b" id="subj"></div></div>
+   <div class="card"><div class="h">Don’t Forget! 📌</div><div class="b" id="forget"></div></div>
+  </div>
+ </div>
+
+ <div class="card c4"><div class="h">Study Tracker (this week)</div><div class="b"><div class="trk" id="trk"></div></div></div>
+ <div class="card c4"><div class="h">Bow Tracker 🎀</div><div class="b cen">
+  <div id="bows"></div>
+  <div class="timer" id="clock">25:00</div>
+  <div id="mode" style="font-weight:700;color:var(--soft)">Focus · 25 mins | Break · 5 mins</div>
+  <div style="margin-top:8px"><button class="btn" id="go">Start</button> <button class="btn" id="rs">Reset</button></div>
+  <div style="margin-top:8px;font-weight:700">Long break after 4 bows 🧸</div>
+ </div></div>
+ <div class="c4" style="display:grid;gap:14px;align-content:start;grid-column:span 4">
+  <div class="card"><div class="h">Water Tracker 💧</div><div class="b cen" id="water"></div></div>
+  <div class="card"><div class="h">How Was My Day?</div><div class="b cen"><div id="stars"></div><textarea data-k="day" style="min-height:50px"></textarea></div></div>
+ </div>
+
+ <div class="card c4"><div class="h">Notes 📝</div><div class="b"><textarea data-k="notes" style="min-height:120px"></textarea></div></div>
+ <div class="c4"><div class="rem">🎀 REMINDER<br>Small steps every day lead to big results.</div></div>
+ <div class="card c4"><div class="h">I’m Proud Of 🐻</div><div class="b"><textarea data-k="proud" style="min-height:100px"></textarea></div></div>
+</div>
+<div class="foot">💙 Stay consistent. Stay positive. You’re getting closer to your dreams! 🌸</div>
+</div>
+<div id="toast">Saved ✓</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let date,D={},W={},wk;
+const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const monday=s=>{const d=parse(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))||{}}catch(e){return{}}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+let tmo;
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('s');clearTimeout(tmo);tmo=setTimeout(()=>e.classList.remove('s'),1400)}
+function save(show){const ok=ls.set('dp:'+date,D)&ls.set('dw:'+wk,W);if(show)toast(ok?'Saved ✓ 💙':'Could not save here')}
+const get=k=>k[0]=='w'&&k[1]==':'?W[k]:D[k];
+const put=(k,v)=>{(k[0]=='w'&&k[1]==':'?W:D)[k]=v;save(false)};
+
+function build(){
+ const hrs=['4 AM - 5 AM','5 AM - 6 AM','6 AM - 7 AM','7 AM - 8 AM','8 AM - 9 AM','9 AM - 10 AM','10 AM - 11 AM','11 AM - 12 PM','12 PM - 1 PM','1 PM - 2 PM','2 PM - 3 PM','3 PM - 4 PM','4 PM - 5 PM','5 PM - 6 PM','6 PM - 7 PM','7 PM - 8 PM','8 PM - 9 PM','9 PM - 10 PM','10 PM - 11 PM'];
+ $('#sched').innerHTML='<div class="t" style="font-weight:800">TIME</div><div class="t" style="font-weight:800">TASK / SUBJECT</div>'+hrs.map((h,i)=>`<div class="t">${h}</div><div><input type="text" data-k="s${i}"></div>`).join('');
+ $('#prio').innerHTML=[1,2,3,4,5].map(i=>`<div class="row"><span class="num">${i}</span><input type="text" data-k="p${i}"></div>`).join('');
+ $('#todo').innerHTML=[0,1,2,3,4,5].map(i=>`<div class="row"><input type="checkbox" data-k="tc${i}"><input type="text" data-k="t${i}"></div>`).join('');
+ $('#subj').innerHTML=[0,1,2,3,4].map(i=>`<div class="row">🔹<input type="text" data-k="su${i}"></div>`).join('');
+ $('#forget').innerHTML=[0,1,2,3,4].map(i=>`<div class="row"><input type="checkbox" data-k="fc${i}"><input type="text" data-k="f${i}"></div>`).join('');
+ const rows=['Focus','Notes','Practice','Revision','Reading','Mocks'];
+ $('#trk').innerHTML='<div></div>'+'MTWTFSS'.split('').map(x=>`<div>${x}</div>`).join('')+rows.map((r,ri)=>`<div style="text-align:left">${r}</div>`+[0,1,2,3,4,5,6].map(d=>`<button class="tg" data-t="w:${ri}-${d}">♡</button>`).join('')).join('');
+ $('#bows').innerHTML=[0,1,2,3].map(i=>`<button class="tg bow" style="font-size:32px" data-t="b${i}">🎀</button>`).join('');
+ $('#water').innerHTML=[0,1,2,3,4,5,6,7].map(i=>`<button class="tg cup" data-t="c${i}">🥛</button>`).join('');
+ $('#stars').innerHTML=[0,1,2,3,4].map(i=>`<button class="tg star" style="font-size:28px" data-t="st${i}">★</button>`).join('');
+ document.querySelectorAll('[data-k]').forEach(e=>e.addEventListener(e.type=='checkbox'?'change':'input',()=>put(e.dataset.k,e.type=='checkbox'?e.checked:e.value)));
+ document.querySelectorAll('[data-t]').forEach(e=>e.addEventListener('click',()=>{const k=e.dataset.t;
+  if(k[0]=='s'&&k[1]=='t'){const n=+k.slice(2);const cur=D.stars||0;D.stars=(cur==n+1)?0:n+1;save(false)}
+  else put(k,!get(k));refresh()}));
+}
+function refresh(){
+ document.querySelectorAll('[data-k]').forEach(e=>{const v=get(e.dataset.k);if(e.type=='checkbox')e.checked=!!v;else e.value=v||''});
+ document.querySelectorAll('[data-t]').forEach(e=>{const k=e.dataset.t;let on;
+  if(k[0]=='s'&&k[1]=='t')on=(+k.slice(2))<(D.stars||0);else on=!!get(k);
+  e.classList.toggle('on',on);if(k[0]=='w')e.textContent=on?'♥':'♡'});
+ $('#dlabel').textContent=parse(date).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+function setDate(s){date=s;wk=monday(s);D=ls.get('dp:'+s);W=ls.get('dw:'+wk);$('#date').value=s;refresh();reset()}
+const shift=n=>{const d=parse(date);d.setDate(d.getDate()+n);setDate(iso(d))};
+
+/* pomodoro */
+let t=1500,run=false,focus=true,iv;
+const fmt=()=>{$('#clock').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
+function reset(){clearInterval(iv);run=false;focus=true;t=1500;$('#go').textContent='Start';fmt()}
+$('#go').onclick=()=>{if(run){clearInterval(iv);run=false;$('#go').textContent='Resume';return}
+ run=true;$('#go').textContent='Pause';
+ iv=setInterval(()=>{t--;fmt();if(t<=0){
+  if(focus){const i=[0,1,2,3].find(i=>!D['b'+i]);if(i!==undefined){D['b'+i]=true;save(false);refresh()}
+   const full=[0,1,2,3].every(i=>D['b'+i]);t=full?900:300;toast(full?'4 bows! Long break 🎉':'Break time 🧸')}
+  else{t=1500;toast('Focus time 💪')}
+  focus=!focus}},1000)};
+$('#rs').onclick=reset;
+
+$('#prev').onclick=()=>shift(-1);$('#next').onclick=()=>shift(1);
+$('#today').onclick=()=>setDate(iso(new Date()));
+$('#date').onchange=e=>e.target.value&&setDate(e.target.value);
+$('#save').onclick=()=>save(true);
+$('#clear').onclick=()=>{if(confirm('Clear everything on this day and start fresh?')){D={};save(false);refresh();toast('Fresh page ✨')}};
+build();setDate(iso(new Date()));
+</script>
+</body>
+</html>
